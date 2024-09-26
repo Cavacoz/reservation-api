@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ReservationAPI</name>
+    </assembly>
+    <members>
+        <member name="M:ReservationAPI.Controllers.ReservationController.GetAll">
+            <summary>
+            Gets all reservations.
+            </summary>
+        </member>
+        <member name="M:ReservationAPI.Controllers.ReservationController.GetReservation(System.Int32)">
+            <summary>
+            Gets a specific reservation
+            </summary>
+            <param name="reservationId">Reservation Id</param>
+            <returns>Returns the reservation with that id</returns>
+        </member>
+        <member name="M:ReservationAPI.Controllers.ReservationController.AddReservation(System.Int32,System.String,System.Int32,System.Int32,System.Int32,System.String)">
+            <summary>
+            Adds a reservation
+            </summary>
+            <param name="reservationId">Reservation Id</param>
+            <param name="reservationName">Reservations Name</param>
+            <param name="year">Reservation Day</param>
+            <param name="month">Reservation Day</param>
+            <param name="day">Reservation Day</param>
+            <param name="user">Reservation's</param>
+            <returns></returns>
+        </member>
+        <member name="M:ReservationAPI.Controllers.ReservationController.DeleteReservation(System.Int32)">
+            <summary>
+            Deletes a reservation
+            </summary>
+            <param name="reservationId">Reservation Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:ReservationAPI.Controllers.ReservationController.UpdateReservation(System.Int32)">
+            <summary>
+            Updates a reservation
+            </summary>
+            <param name="reservationId">Reservation Id</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

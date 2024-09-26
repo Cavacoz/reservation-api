@@ -1,0 +1,19 @@
+@ReservationAPI_HostAddress = http://localhost:5220
+
+GET {{ReservationAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+GET {{ReservationAPI_HostAddress}}/api/Reservation/
+Accept: application/json
+
+###
+
+POST {{ReservationAPI_HostAddress}}/api/Reservation?reservationId=1&reservationName=Rui%27s%20Reservation&year=2024&month=8&day=9&dayOfWeek=6&user=Rui
+Accept: application/json
+
+###
+
+DELETE {{ReservationAPI_HostAddress}}/api/Reservation/1
+Accept: application/json
