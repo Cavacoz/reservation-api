@@ -23,10 +23,10 @@ namespace ReservationAPI.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
             _logger.LogInformation("Getting all reservations from service.");
-            var reservations = _reservationService.GetReservations();
+            var reservations = await _reservationService.GetReservations();
 
             if (reservations.Count == 0)
             {
@@ -46,10 +46,10 @@ namespace ReservationAPI.Controllers
         [HttpGet("{reservationId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetReservation(int reservationId)
+        public async Task<IActionResult> GetReservation(int reservationId)
         {
             _logger.LogInformation($"Getting reservation {reservationId} from service.");
-            var reservation = _reservationService.GetReservation(reservationId);
+            var reservation = await _reservationService.GetReservation(reservationId);
 
             if (reservation == null)
             {
@@ -61,7 +61,6 @@ namespace ReservationAPI.Controllers
         /// <summary>
         /// Adds a reservation
         /// </summary>
-        /// <param name="reservationId">Reservation Id</param>
         /// <param name="reservationName">Reservations Name</param>
         /// <param name="year">Reservation Day</param>
         /// <param name="month">Reservation Day</param>
@@ -71,12 +70,12 @@ namespace ReservationAPI.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult AddReservation(int reservationId, string reservationName, int year, int month, int day, string user)
+        public async Task<IActionResult> AddReservation(string reservationName, int year, int month, int day, string user)
         {
             DateOnly reservationDay = new(year, month, day);
             _logger.LogInformation($"Calling Service to add reservation to this day {reservationDay}");
-            _reservationService.AddReservation(reservationId, reservationName, reservationDay, user);
-            return CreatedAtAction(nameof(AddReservation), new { reservationID = reservationId, reservationNAME = reservationName, reservationDAY = reservationDay });
+            await _reservationService.AddReservation(reservationName, reservationDay, user);
+            return CreatedAtAction(nameof(AddReservation), new { reservationNAME = reservationName, reservationDAY = reservationDay });
         }
 
         /// <summary>
@@ -87,10 +86,10 @@ namespace ReservationAPI.Controllers
         [HttpDelete("{reservationId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult DeleteReservation(int reservationId)
+        public async Task<IActionResult> DeleteReservation(int reservationId)
         {
             _logger.LogWarning($"Calling Service to delete reservation with Id: {reservationId}");
-            bool wasDeleted = _reservationService.DeleteReservation(reservationId);
+            bool wasDeleted = await _reservationService.DeleteReservation(reservationId);
             if (!wasDeleted)
             {
                 return NotFound("Either it wasn't deleted or not found!");

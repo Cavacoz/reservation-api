@@ -16,11 +16,10 @@
             <param name="reservationId">Reservation Id</param>
             <returns>Returns the reservation with that id</returns>
         </member>
-        <member name="M:ReservationAPI.Controllers.ReservationController.AddReservation(System.Int32,System.String,System.Int32,System.Int32,System.Int32,System.String)">
+        <member name="M:ReservationAPI.Controllers.ReservationController.AddReservation(System.String,System.Int32,System.Int32,System.Int32,System.String)">
             <summary>
             Adds a reservation
             </summary>
-            <param name="reservationId">Reservation Id</param>
             <param name="reservationName">Reservations Name</param>
             <param name="year">Reservation Day</param>
             <param name="month">Reservation Day</param>
@@ -41,6 +40,18 @@
             </summary>
             <param name="reservationId">Reservation Id</param>
             <returns></returns>
+        </member>
+        <member name="T:ReservationAPI.Migrations.InitialCreate">
+            <inheritdoc />
+        </member>
+        <member name="M:ReservationAPI.Migrations.InitialCreate.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ReservationAPI.Migrations.InitialCreate.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ReservationAPI.Migrations.InitialCreate.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
         </member>
     </members>
 </doc>

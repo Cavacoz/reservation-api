@@ -1,13 +1,15 @@
 using ReservationAPI.Models;
+using ReservationAPI.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace ReservationAPI.Services
 {
     public interface IReservationService
     {
-        List<Reservation> GetReservations();
-        Reservation? GetReservation(int reservationId);
-        void AddReservation(int reservationId, string reservationName, DateOnly reservationDay, string user);
-        bool DeleteReservation(int reservationId);
+        Task<List<Reservation>> GetReservations();
+        Task<Reservation?> GetReservation(int reservationId);
+        Task AddReservation(string reservationName, DateOnly reservationDay, string user);
+        Task<bool> DeleteReservation(int reservationId);
         void UpdateReservation(int reservationId);
     }
 
@@ -15,46 +17,52 @@ namespace ReservationAPI.Services
     {
         private readonly List<Reservation> _reservations = [];
 
+        private readonly AppDbContext _DbContext;
+
         private readonly ILogger<ReservationService> _logger;
 
-        public ReservationService(ILogger<ReservationService> logger)
+        public ReservationService(AppDbContext dbContext, ILogger<ReservationService> logger)
         {
+            _DbContext = dbContext;
             _logger = logger;
         }
 
-        List<Reservation> IReservationService.GetReservations()
+        async Task<List<Reservation>> IReservationService.GetReservations()
         {
-            _logger.LogInformation($"Returning {_reservations.Count} reservations");
-            return _reservations;
+            _logger.LogInformation($"Returning {_DbContext.Reservations.Count()} reservations");
+            return await _DbContext.Reservations.ToListAsync();
         }
 
-        Reservation? IReservationService.GetReservation(int reservationId)
+        async Task<Reservation?> IReservationService.GetReservation(int reservationId)
         {
             _logger.LogInformation($"Trying to find reservations with Id: {reservationId}");
-            var reservation = _reservations.Find(r => r.ReservationId == reservationId);
+            Reservation? reservation = await _DbContext.Reservations.FirstOrDefaultAsync(r => r.ReservationID == reservationId);
             _logger.LogInformation($"Found reservation: {reservation}");
             return reservation;
         }
 
-        void IReservationService.AddReservation(int reservationId, string reservationName, DateOnly reservationDay, string user)
+        async Task IReservationService.AddReservation(string reservationName, DateOnly reservationDay, string user)
         {
-            Reservation reservation = new() { ReservationId = reservationId, ReservationName = reservationName, ReservationDay = reservationDay, User = user };
+            Reservation reservation = new() { ReservationName = reservationName, ReservationDay = reservationDay, User = user };
             _logger.LogWarning($"Adding this reservation: {reservation}");
-            _reservations.Add(reservation);
+            await _DbContext.AddAsync(reservation);
+            await _DbContext.SaveChangesAsync();
             _logger.LogInformation($"Reservation {reservation} added.");
         }
 
-        bool IReservationService.DeleteReservation(int reservationId)
+        async Task<bool> IReservationService.DeleteReservation(int reservationId)
         {
             _logger.LogWarning($"Deleting reservation with Id: {reservationId}");
-            var reservationToDelete = _reservations.Find(r => r.ReservationId == reservationId);
+            Reservation? reservationToDelete = await _DbContext.Reservations.FirstOrDefaultAsync(r => r.ReservationID == reservationId);
             if (reservationToDelete == null)
             {
                 _logger.LogInformation("Reservation was not found or deleted.");
                 return false;
             }
+            _DbContext.Reservations.Remove(reservationToDelete);
             _logger.LogInformation($"Reservation Deleted.");
-            return _reservations.Remove(reservationToDelete);
+            await _DbContext.SaveChangesAsync();
+            return true;
         }
 
         void IReservationService.UpdateReservation(int reservationId)

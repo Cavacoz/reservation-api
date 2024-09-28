@@ -1,4 +1,6 @@
 using System.Reflection; // SwaggerGen Assembly
+using Microsoft.EntityFrameworkCore;
+using ReservationAPI.Data;
 using ReservationAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,8 +15,10 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
 
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite("Data Source=reservation.db"));
 
-builder.Services.AddSingleton<IReservationService, ReservationService>();
+builder.Services.AddTransient<IReservationService, ReservationService>();
+
 
 var app = builder.Build();
 

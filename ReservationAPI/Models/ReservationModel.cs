@@ -3,7 +3,7 @@ namespace ReservationAPI.Models
 
     public class Reservation
     {
-        public int ReservationId { get; set; }
+        public int ReservationID { get; set; }
 
         public required string ReservationName { get; set; }
 
