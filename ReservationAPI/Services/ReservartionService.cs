@@ -37,7 +37,7 @@ namespace ReservationAPI.Services
         {
             _logger.LogInformation($"Trying to find reservations with Id: {reservationId}");
             Reservation? reservation = await _DbContext.Reservations.FirstOrDefaultAsync(r => r.ReservationID == reservationId);
-            _logger.LogInformation($"Found reservation: {reservation}");
+            _logger.LogInformation(reservation == null ? "No servation found" : $"Found reservation: {reservation}");
             return reservation;
         }
 
@@ -60,8 +60,8 @@ namespace ReservationAPI.Services
                 return false;
             }
             _DbContext.Reservations.Remove(reservationToDelete);
-            _logger.LogInformation($"Reservation Deleted.");
             await _DbContext.SaveChangesAsync();
+            _logger.LogInformation($"Reservation Deleted.");
             return true;
         }
 
