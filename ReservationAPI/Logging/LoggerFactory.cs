@@ -9,7 +9,7 @@ namespace ReservationAPI.Logging
     {
         public ILogger CreateLogger(string name)
         {
-            return new Logger(name);
+            return new FileLogger(name);
         }
     }
 

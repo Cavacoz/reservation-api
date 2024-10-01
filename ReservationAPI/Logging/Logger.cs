@@ -16,13 +16,15 @@ namespace ReservationAPI.Logging
         void LogError(string message);
     }
 
-    class Logger : ILogger
+    class FileLogger : ILogger
     {
 
         private static readonly string _RootDirectory = Path.Combine(Directory.GetCurrentDirectory() + "\\Logging\\");
         private readonly string _fileName;
 
-        public Logger(string fileName)
+        private static readonly object _lock = new();
+
+        public FileLogger(string fileName)
         {
             _fileName = fileName;
 
@@ -34,8 +36,11 @@ namespace ReservationAPI.Logging
 
         void WriteLog(string message, LogLevel logLevel)
         {
-            string logMessage = $"[{DateTime.Now}] -- [{logLevel}] -- {message}\n";
-            File.AppendAllText($"{_RootDirectory}{DateTime.Now.ToLongDateString()}_{_fileName}", logMessage);
+            lock (_lock)
+            {
+                string logMessage = $"[{DateTime.Now}] -- [{logLevel}] -- {message}\n";
+                File.AppendAllText($"{_RootDirectory}{DateTime.Now.ToLongDateString()}_{_fileName}", logMessage);
+            }
 
         }
 
