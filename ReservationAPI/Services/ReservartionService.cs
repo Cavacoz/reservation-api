@@ -15,25 +15,25 @@ namespace ReservationAPI.Services
 
     class ReservationService : IReservationService
     {
-        private readonly List<Reservation> _reservations = [];
-
         private readonly AppDbContext _DbContext;
-
         private readonly ILogger<ReservationService> _logger;
 
-        public ReservationService(AppDbContext dbContext, ILogger<ReservationService> logger)
+        private readonly Logging.ILogger _customLogger;
+
+        public ReservationService(AppDbContext dbContext, ILogger<ReservationService> logger, Logging.ILoggerFactory loggerFactory)
         {
             _DbContext = dbContext;
             _logger = logger;
+            _customLogger = loggerFactory.CreateLogger("ReservationService.txt");
         }
 
-        async Task<List<Reservation>> IReservationService.GetReservations()
+        public async Task<List<Reservation>> GetReservations()
         {
             _logger.LogInformation($"Returning {_DbContext.Reservations.Count()} reservations");
             return await _DbContext.Reservations.ToListAsync();
         }
 
-        async Task<Reservation?> IReservationService.GetReservation(int reservationId)
+        public async Task<Reservation?> GetReservation(int reservationId)
         {
             _logger.LogInformation($"Trying to find reservations with Id: {reservationId}");
             Reservation? reservation = await _DbContext.Reservations.FirstOrDefaultAsync(r => r.ReservationID == reservationId);
@@ -41,7 +41,7 @@ namespace ReservationAPI.Services
             return reservation;
         }
 
-        async Task IReservationService.AddReservation(string reservationName, DateOnly reservationDay, string user)
+        public async Task AddReservation(string reservationName, DateOnly reservationDay, string user)
         {
             Reservation reservation = new() { ReservationName = reservationName, ReservationDay = reservationDay, User = user };
             _logger.LogWarning($"Adding this reservation: {reservation}");
@@ -50,7 +50,7 @@ namespace ReservationAPI.Services
             _logger.LogInformation($"Reservation {reservation} added.");
         }
 
-        async Task<bool> IReservationService.DeleteReservation(int reservationId)
+        public async Task<bool> DeleteReservation(int reservationId)
         {
             _logger.LogWarning($"Deleting reservation with Id: {reservationId}");
             Reservation? reservationToDelete = await _DbContext.Reservations.FirstOrDefaultAsync(r => r.ReservationID == reservationId);
@@ -65,7 +65,7 @@ namespace ReservationAPI.Services
             return true;
         }
 
-        void IReservationService.UpdateReservation(int reservationId)
+        public void UpdateReservation(int reservationId)
         {
             throw new NotImplementedException();
         }
