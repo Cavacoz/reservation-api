@@ -10,11 +10,13 @@ namespace ReservationAPI.Controllers
 
         private readonly ILogger<ReservationController> _logger;
         private readonly IReservationService _reservationService;
+        private readonly Logging.ILogger _customLogger;
 
-        public ReservationController(IReservationService reservationService, ILogger<ReservationController> logger)
+        public ReservationController(IReservationService reservationService, ILogger<ReservationController> logger, Logging.ILoggerFactory loggerFactory)
         {
             _logger = logger;
             _reservationService = reservationService;
+            _customLogger = loggerFactory.CreateLogger("ReservationController.txt");
         }
 
         /// <summary>
@@ -25,16 +27,19 @@ namespace ReservationAPI.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> GetAll()
         {
-            _logger.LogInformation("Getting all reservations from service.");
+            // _logger.LogInformation("Getting all reservations from service.");
+            _customLogger.LogInformation("Getting all reservations from service.");
             var reservations = await _reservationService.GetReservations();
 
             if (reservations.Count == 0)
             {
-                _logger.LogInformation("No reservations available.");
+                // _logger.LogInformation("No reservations available.");
+                _customLogger.LogInformation("No reservations available.");
                 return NoContent();
             }
 
-            _logger.LogInformation($"Returning {reservations.Count} reservations");
+            // _logger.LogInformation($"Returning {reservations.Count} reservations");
+            _customLogger.LogInformation($"Returning {reservations.Count} reservations");
             return Ok(reservations);
         }
 
@@ -48,7 +53,8 @@ namespace ReservationAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetReservation(int reservationId)
         {
-            _logger.LogInformation($"Getting reservation {reservationId} from service.");
+            _customLogger.LogInformation($"Getting reservation {reservationId} from service.");
+            // _logger.LogInformation($"Getting reservation {reservationId} from service.");
             var reservation = await _reservationService.GetReservation(reservationId);
 
             if (reservation == null)
@@ -73,7 +79,8 @@ namespace ReservationAPI.Controllers
         public async Task<IActionResult> AddReservation(string reservationName, int year, int month, int day, string user)
         {
             DateOnly reservationDay = new(year, month, day);
-            _logger.LogInformation($"Calling Service to add reservation to this day {reservationDay}");
+            // _logger.LogInformation($"Calling Service to add reservation to this day {reservationDay}");
+            _customLogger.LogInformation($"Calling Service to add reservation to this day {reservationDay}");
             await _reservationService.AddReservation(reservationName, reservationDay, user);
             return CreatedAtAction(nameof(AddReservation), new { reservationNAME = reservationName, reservationDAY = reservationDay });
         }
@@ -88,7 +95,8 @@ namespace ReservationAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteReservation(int reservationId)
         {
-            _logger.LogWarning($"Calling Service to delete reservation with Id: {reservationId}");
+            _customLogger.LogWarning($"Calling Service to delete reservation with Id: {reservationId}");
+            // _logger.LogWarning($"Calling Service to delete reservation with Id: {reservationId}");
             bool wasDeleted = await _reservationService.DeleteReservation(reservationId);
             if (!wasDeleted)
             {
@@ -113,7 +121,8 @@ namespace ReservationAPI.Controllers
             }
             catch (NotImplementedException)
             {
-                _logger.LogError("Http method PUT not implementd!");
+                // _logger.LogError("Http method PUT not implementd!");
+                _customLogger.LogError("Http method PUT not implementd!");
                 return StatusCode(501, "Method is not yet implemented");
             }
             return NoContent();

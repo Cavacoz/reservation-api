@@ -17,7 +17,6 @@ namespace ReservationAPI.Services
     {
         private readonly AppDbContext _DbContext;
         private readonly ILogger<ReservationService> _logger;
-
         private readonly Logging.ILogger _customLogger;
 
         public ReservationService(AppDbContext dbContext, ILogger<ReservationService> logger, Logging.ILoggerFactory loggerFactory)
@@ -29,39 +28,44 @@ namespace ReservationAPI.Services
 
         public async Task<List<Reservation>> GetReservations()
         {
-            _logger.LogInformation($"Returning {_DbContext.Reservations.Count()} reservations");
+            _customLogger.LogInformation($"Returning {_DbContext.Reservations.Count()} reservations");
+            // _logger.LogInformation($"Returning {_DbContext.Reservations.Count()} reservations");
             return await _DbContext.Reservations.ToListAsync();
         }
 
         public async Task<Reservation?> GetReservation(int reservationId)
         {
-            _logger.LogInformation($"Trying to find reservations with Id: {reservationId}");
+            // _logger.LogInformation($"Trying to find reservations with Id: {reservationId}");
             Reservation? reservation = await _DbContext.Reservations.FirstOrDefaultAsync(r => r.ReservationID == reservationId);
-            _logger.LogInformation(reservation == null ? "No servation found" : $"Found reservation: {reservation}");
+            // _logger.LogInformation(reservation == null ? "No servation found" : $"Found reservation: {reservation}");
+            _customLogger.LogInformation(reservation == null ? "No servation found" : $"Found reservation: {reservation}");
             return reservation;
         }
 
         public async Task AddReservation(string reservationName, DateOnly reservationDay, string user)
         {
             Reservation reservation = new() { ReservationName = reservationName, ReservationDay = reservationDay, User = user };
-            _logger.LogWarning($"Adding this reservation: {reservation}");
+            // _logger.LogWarning($"Adding this reservation: {reservation}");
             await _DbContext.AddAsync(reservation);
             await _DbContext.SaveChangesAsync();
-            _logger.LogInformation($"Reservation {reservation} added.");
+            // _logger.LogInformation($"Reservation {reservation} added.");
+            _customLogger.LogInformation($"Reservation {reservation} added.");
         }
 
         public async Task<bool> DeleteReservation(int reservationId)
         {
-            _logger.LogWarning($"Deleting reservation with Id: {reservationId}");
+            // _logger.LogWarning($"Deleting reservation with Id: {reservationId}");
             Reservation? reservationToDelete = await _DbContext.Reservations.FirstOrDefaultAsync(r => r.ReservationID == reservationId);
             if (reservationToDelete == null)
             {
-                _logger.LogInformation("Reservation was not found or deleted.");
+                // _logger.LogInformation("Reservation was not found or deleted.");
+                _customLogger.LogInformation($"Reservation {reservationId} was not found or deleted.");
                 return false;
             }
             _DbContext.Reservations.Remove(reservationToDelete);
             await _DbContext.SaveChangesAsync();
-            _logger.LogInformation($"Reservation Deleted.");
+            // _logger.LogInformation($"Reservation Deleted.");
+            _customLogger.LogInformation($"Reservation {reservationId} Deleted.");
             return true;
         }
 
