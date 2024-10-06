@@ -8,7 +8,7 @@ namespace ReservationAPI.Services
     {
         Task<List<Reservation>> GetReservations();
         Task<Reservation?> GetReservation(int reservationId);
-        Task AddReservation(string reservationName, DateOnly reservationDay, string user);
+        Task<Reservation> AddReservation(string reservationName, DateOnly reservationDay, string user);
         Task<bool> DeleteReservation(int reservationId);
         void UpdateReservation(int reservationId);
     }
@@ -42,7 +42,7 @@ namespace ReservationAPI.Services
             return reservation;
         }
 
-        public async Task AddReservation(string reservationName, DateOnly reservationDay, string user)
+        public async Task<Reservation> AddReservation(string reservationName, DateOnly reservationDay, string user)
         {
             Reservation reservation = new() { ReservationName = reservationName, ReservationDay = reservationDay, User = user };
             // _logger.LogWarning($"Adding this reservation: {reservation}");
@@ -50,6 +50,8 @@ namespace ReservationAPI.Services
             await _DbContext.SaveChangesAsync();
             // _logger.LogInformation($"Reservation {reservation} added.");
             _customLogger.LogInformation($"Reservation {reservation} added.");
+
+            return reservation;
         }
 
         public async Task<bool> DeleteReservation(int reservationId)

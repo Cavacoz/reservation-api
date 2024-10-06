@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ReservationAPI.Services;
+using ReservationAPI.Models;
 
 namespace ReservationAPI.Controllers
 {
@@ -81,8 +82,8 @@ namespace ReservationAPI.Controllers
             DateOnly reservationDay = new(year, month, day);
             // _logger.LogInformation($"Calling Service to add reservation to this day {reservationDay}");
             _customLogger.LogInformation($"Calling Service to add reservation to this day {reservationDay}");
-            await _reservationService.AddReservation(reservationName, reservationDay, user);
-            return CreatedAtAction(nameof(AddReservation), new { reservationNAME = reservationName, reservationDAY = reservationDay });
+            Reservation reservation = await _reservationService.AddReservation(reservationName, reservationDay, user);
+            return CreatedAtAction(nameof(AddReservation), reservation);
         }
 
         /// <summary>
