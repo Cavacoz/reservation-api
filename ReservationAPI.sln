@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReservationAPI", "ReservationAPI\ReservationAPI.csproj", "{D5E0FE16-3F63-473F-8B3B-C5F3B661CFC3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReservationAPITests", "ReservationAPITests\ReservationAPITests.csproj", "{E3056FBB-4A7A-44C0-B28E-3A7ACA9B6B5B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{D5E0FE16-3F63-473F-8B3B-C5F3B661CFC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5E0FE16-3F63-473F-8B3B-C5F3B661CFC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5E0FE16-3F63-473F-8B3B-C5F3B661CFC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3056FBB-4A7A-44C0-B28E-3A7ACA9B6B5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3056FBB-4A7A-44C0-B28E-3A7ACA9B6B5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3056FBB-4A7A-44C0-B28E-3A7ACA9B6B5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3056FBB-4A7A-44C0-B28E-3A7ACA9B6B5B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

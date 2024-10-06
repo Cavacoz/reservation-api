@@ -8,3 +8,9 @@ ReservationAPI/reservation.db-wal
 # This two folders are recreated when the project is built. 
 ReservationAPI/obj/
 ReservationAPI/bin/
+
+ReservationAPITests/obj/
+ReservationAPITests/TestResults/
+
+ReservationAPITests/bin/*
+!bin/*/Logging/

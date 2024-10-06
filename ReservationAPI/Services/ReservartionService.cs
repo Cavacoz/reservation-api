@@ -13,7 +13,7 @@ namespace ReservationAPI.Services
         void UpdateReservation(int reservationId);
     }
 
-    class ReservationService : IReservationService
+    public class ReservationService : IReservationService
     {
         private readonly AppDbContext _DbContext;
         private readonly ILogger<ReservationService> _logger;
