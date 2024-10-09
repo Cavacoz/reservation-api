@@ -3,9 +3,6 @@ using ReservationAPI.Data;
 using ReservationAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace ReservationAPITests;
 
