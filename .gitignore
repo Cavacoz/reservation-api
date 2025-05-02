@@ -1,4 +1,5 @@
 ReservationAPI/Migrations/
+ReservationAPI/Logging/
 
 # Database related files.
 ReservationAPI/reservation.db
