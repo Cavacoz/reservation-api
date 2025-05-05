@@ -9,7 +9,8 @@ namespace ReservationAPI.Models
 
         public required DateOnly ReservationDay { get; set; }
 
-        public required string User { get; set; }
+        public int UserId { get; set; }
+        public User User { get; set; }
 
         public override string ToString()
         {

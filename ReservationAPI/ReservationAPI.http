@@ -3,7 +3,16 @@
 GET {{ReservationAPI_HostAddress}}/weatherforecast/
 Accept: application/json
 
-###
+### Test register and login requests.
+
+POST {{ReservationAPI_HostAddress}}/api/Auth/register
+Accept: application/json
+
+POST {{ReservationAPI_HostAddress}}/api/Auth/login
+Accept: application/json
+
+
+### Bellow are all requests to test.
 
 GET {{ReservationAPI_HostAddress}}/api/Reservation/
 Accept: application/json

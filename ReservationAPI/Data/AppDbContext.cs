@@ -7,9 +7,11 @@ namespace ReservationAPI.Data
     {
         public DbSet<Reservation> Reservations { get; set; }
 
+        public DbSet<User> Users { get; set; }
+
         public AppDbContext(DbContextOptions options) : base(options)
         {
-            
+
         }
 
     }

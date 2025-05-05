@@ -1,14 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
 using ReservationAPI.Services;
 using ReservationAPI.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using ReservationAPI.DTO;
 
 namespace ReservationAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ReservationController : ControllerBase
     {
-
         private readonly IReservationService _reservationService;
         private readonly Logging.ILogger _customLogger;
 
@@ -75,12 +78,13 @@ namespace ReservationAPI.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddReservation(string reservationName, int year, int month, int day, string user)
+        public async Task<IActionResult> AddReservation([FromBody] AddReservationDto dto)
         {
-            DateOnly reservationDay = new(year, month, day);
-            // _logger.LogInformation($"Calling Service to add reservation to this day {reservationDay}");
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            DateOnly reservationDay = new(dto.Year, dto.Month, dto.Day);
             _customLogger.LogInformation($"Calling Service to add reservation to this day {reservationDay}");
-            Reservation reservation = await _reservationService.AddReservation(reservationName, reservationDay, user);
+            Reservation reservation = await _reservationService.AddReservation(dto.ReservationName, reservationDay, userId);
             return CreatedAtAction(nameof(AddReservation), reservation);
         }
 

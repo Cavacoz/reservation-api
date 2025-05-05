@@ -42,13 +42,12 @@ namespace ReservationAPI.Services
             return reservation;
         }
 
-        public async Task<Reservation> AddReservation(string reservationName, DateOnly reservationDay, string user)
+        public async Task<Reservation> AddReservation(string reservationName, DateOnly reservationDay, string userId)
         {
-            Reservation reservation = new() { ReservationName = reservationName, ReservationDay = reservationDay, User = user };
-            // _logger.LogWarning($"Adding this reservation: {reservation}");
+            
+            Reservation reservation = new() { ReservationName = reservationName, ReservationDay = reservationDay, UserId = int.Parse(userId)};
             await _DbContext.AddAsync(reservation);
             await _DbContext.SaveChangesAsync();
-            // _logger.LogInformation($"Reservation {reservation} added.");
             _customLogger.LogInformation($"Reservation {reservation} added.");
 
             return reservation;
