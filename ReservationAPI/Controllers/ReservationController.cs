@@ -9,13 +9,11 @@ namespace ReservationAPI.Controllers
     public class ReservationController : ControllerBase
     {
 
-        private readonly ILogger<ReservationController> _logger;
         private readonly IReservationService _reservationService;
         private readonly Logging.ILogger _customLogger;
 
-        public ReservationController(IReservationService reservationService, ILogger<ReservationController> logger, Logging.ILoggerFactory loggerFactory)
+        public ReservationController(IReservationService reservationService, Logging.ILoggerFactory loggerFactory)
         {
-            _logger = logger;
             _reservationService = reservationService;
             _customLogger = loggerFactory.CreateLogger("ReservationController.txt");
         }
