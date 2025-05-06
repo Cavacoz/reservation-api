@@ -25,7 +25,7 @@ namespace ReservationAPI.Controllers
         /// Gets all reservations for the specific logged in User.
         /// </summary>
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<SendReservationDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> GetAll()
         {
@@ -51,7 +51,7 @@ namespace ReservationAPI.Controllers
         /// <param name="reservationId">Reservation Id</param>
         /// <returns>Returns the reservation with that id</returns>
         [HttpGet("{reservationId}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SendReservationDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetReservation(int reservationId)
         {
@@ -68,7 +68,7 @@ namespace ReservationAPI.Controllers
         /// <param name="dto">Data Transfer Object with information about the reservation to add.</param>
         /// <returns></returns>
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(SendReservationDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddReservation(AddReservationDto dto)
         {
