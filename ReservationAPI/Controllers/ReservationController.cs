@@ -29,7 +29,6 @@ namespace ReservationAPI.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> GetAll()
         {
-
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             _customLogger.LogInformation("Getting all reservations from service.");
@@ -38,7 +37,6 @@ namespace ReservationAPI.Controllers
 
             if (reservations.Count == 0)
             {
-
                 _customLogger.LogInformation($"No reservations available for User:  {userId}.");
                 return NoContent();
             }
@@ -48,7 +46,7 @@ namespace ReservationAPI.Controllers
         }
 
         /// <summary>
-        /// Gets a specific reservation
+        /// Gets a specific reservation for the current logged in User.
         /// </summary>
         /// <param name="reservationId">Reservation Id</param>
         /// <returns>Returns the reservation with that id</returns>
@@ -57,14 +55,11 @@ namespace ReservationAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetReservation(int reservationId)
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             _customLogger.LogInformation($"Getting reservation {reservationId} from service.");
-            var reservation = await _reservationService.GetReservation(reservationId);
+            var reservation = await _reservationService.GetReservation(reservationId, userId);
 
-            if (reservation == null)
-            {
-                return NotFound();
-            }
-            return Ok(reservation);
+            return reservation != null ? Ok(reservation) : NotFound($"No reservation found with {reservationId} for User: {userId}");
         }
 
         /// <summary>

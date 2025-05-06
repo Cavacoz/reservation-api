@@ -8,7 +8,7 @@ namespace ReservationAPI.Services
     public interface IReservationService
     {
         Task<List<SendReservationDto>> GetReservations(string userId);
-        Task<Reservation?> GetReservation(int reservationId);
+        Task<SendReservationDto?> GetReservation(int reservationId, string userId);
         Task<Reservation> AddReservation(string reservationName, DateOnly reservationDay, string user);
         Task<bool> DeleteReservation(int reservationId);
         void UpdateReservation(int reservationId);
@@ -45,13 +45,17 @@ namespace ReservationAPI.Services
             return reservationsFromUser;
         }
 
-        public async Task<Reservation?> GetReservation(int reservationId)
+        public async Task<SendReservationDto?> GetReservation(int reservationId, string userId)
         {
-            // _logger.LogInformation($"Trying to find reservations with Id: {reservationId}");
-            Reservation? reservation = await _DbContext.Reservations.FirstOrDefaultAsync(r => r.ReservationID == reservationId);
-            // _logger.LogInformation(reservation == null ? "No servation found" : $"Found reservation: {reservation}");
+            Reservation? reservation = await _DbContext.Reservations.FirstOrDefaultAsync(r => r.ReservationID == reservationId && r.UserId == int.Parse(userId));
+
             _customLogger.LogInformation(reservation == null ? "No servation found" : $"Found reservation: {reservation}");
-            return reservation;
+
+            return reservation != null ? new SendReservationDto {
+                ReservationID = reservation.ReservationID, 
+                ReservationName = reservation.ReservationName, 
+                ReservationDay = reservation.ReservationDay} 
+                : null;
         }
 
         public async Task<Reservation> AddReservation(string reservationName, DateOnly reservationDay, string userId)
