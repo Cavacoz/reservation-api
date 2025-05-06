@@ -22,26 +22,28 @@ namespace ReservationAPI.Controllers
         }
 
         /// <summary>
-        /// Gets all reservations.
+        /// Gets all reservations for the specific logged in User.
         /// </summary>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> GetAll()
         {
-            // _logger.LogInformation("Getting all reservations from service.");
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             _customLogger.LogInformation("Getting all reservations from service.");
-            var reservations = await _reservationService.GetReservations();
+
+            var reservations = await _reservationService.GetReservations(userId);
 
             if (reservations.Count == 0)
             {
-                // _logger.LogInformation("No reservations available.");
-                _customLogger.LogInformation("No reservations available.");
+
+                _customLogger.LogInformation($"No reservations available for User:  {userId}.");
                 return NoContent();
             }
 
-            // _logger.LogInformation($"Returning {reservations.Count} reservations");
-            _customLogger.LogInformation($"Returning {reservations.Count} reservations");
+            _customLogger.LogInformation($"Returning {reservations.Count} reservations to User: {userId}");
             return Ok(reservations);
         }
 
@@ -56,7 +58,6 @@ namespace ReservationAPI.Controllers
         public async Task<IActionResult> GetReservation(int reservationId)
         {
             _customLogger.LogInformation($"Getting reservation {reservationId} from service.");
-            // _logger.LogInformation($"Getting reservation {reservationId} from service.");
             var reservation = await _reservationService.GetReservation(reservationId);
 
             if (reservation == null)
@@ -67,21 +68,16 @@ namespace ReservationAPI.Controllers
         }
 
         /// <summary>
-        /// Adds a reservation
+        /// Adds a reservation with the current logged in user.
         /// </summary>
-        /// <param name="reservationName">Reservations Name</param>
-        /// <param name="year">Reservation Day</param>
-        /// <param name="month">Reservation Day</param>
-        /// <param name="day">Reservation Day</param>
-        /// <param name="user">Reservation's</param>
+        /// <param name="dto">Data Transfer Object with information about the reservation to add.</param>
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddReservation([FromBody] AddReservationDto dto)
+        public async Task<IActionResult> AddReservation(AddReservationDto dto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
             DateOnly reservationDay = new(dto.Year, dto.Month, dto.Day);
             _customLogger.LogInformation($"Calling Service to add reservation to this day {reservationDay}");
             Reservation reservation = await _reservationService.AddReservation(dto.ReservationName, reservationDay, userId);

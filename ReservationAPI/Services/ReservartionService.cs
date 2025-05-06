@@ -1,12 +1,13 @@
 using ReservationAPI.Models;
 using ReservationAPI.Data;
 using Microsoft.EntityFrameworkCore;
+using ReservationAPI.DTO;
 
 namespace ReservationAPI.Services
 {
     public interface IReservationService
     {
-        Task<List<Reservation>> GetReservations();
+        Task<List<SendReservationDto>> GetReservations(string userId);
         Task<Reservation?> GetReservation(int reservationId);
         Task<Reservation> AddReservation(string reservationName, DateOnly reservationDay, string user);
         Task<bool> DeleteReservation(int reservationId);
@@ -26,11 +27,22 @@ namespace ReservationAPI.Services
             _customLogger = loggerFactory.CreateLogger("ReservationService.txt");
         }
 
-        public async Task<List<Reservation>> GetReservations()
+        public async Task<List<SendReservationDto>> GetReservations(string userId)
         {
-            _customLogger.LogInformation($"Returning {_DbContext.Reservations.Count()} reservations");
-            // _logger.LogInformation($"Returning {_DbContext.Reservations.Count()} reservations");
-            return await _DbContext.Reservations.ToListAsync();
+
+            var reservationsFromUser = await _DbContext.Reservations
+                .Where(r => r.UserId == int.Parse(userId))
+                .Select(r => new SendReservationDto 
+                {
+                    ReservationID = r.ReservationID,
+                    ReservationName = r.ReservationName,
+                    ReservationDay = r.ReservationDay
+                })
+                .ToListAsync();
+
+            _customLogger.LogInformation($"Returning {reservationsFromUser.Count} reservations to User: {userId}");
+
+            return reservationsFromUser;
         }
 
         public async Task<Reservation?> GetReservation(int reservationId)
@@ -44,8 +56,8 @@ namespace ReservationAPI.Services
 
         public async Task<Reservation> AddReservation(string reservationName, DateOnly reservationDay, string userId)
         {
-            
-            Reservation reservation = new() { ReservationName = reservationName, ReservationDay = reservationDay, UserId = int.Parse(userId)};
+
+            Reservation reservation = new() { ReservationName = reservationName, ReservationDay = reservationDay, UserId = int.Parse(userId) };
             await _DbContext.AddAsync(reservation);
             await _DbContext.SaveChangesAsync();
             _customLogger.LogInformation($"Reservation {reservation} added.");
