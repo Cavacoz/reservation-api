@@ -10,6 +10,7 @@ namespace ReservationAPI.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
+    [Produces("application/json")]
     public class ReservationController : ControllerBase
     {
         private readonly IReservationService _reservationService;
