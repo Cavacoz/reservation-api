@@ -75,7 +75,8 @@ namespace ReservationAPI.Controllers
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             DateOnly reservationDay = new(dto.Year, dto.Month, dto.Day);
             _customLogger.LogInformation($"Calling Service to add reservation to this day {reservationDay}");
-            Reservation reservation = await _reservationService.AddReservation(dto.ReservationName, reservationDay, userId);
+            SendReservationDto reservation = await _reservationService.AddReservation(dto.ReservationName, reservationDay, userId);
+
             return CreatedAtAction(nameof(AddReservation), reservation);
         }
 

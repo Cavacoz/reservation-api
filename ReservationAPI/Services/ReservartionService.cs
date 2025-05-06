@@ -9,7 +9,7 @@ namespace ReservationAPI.Services
     {
         Task<List<SendReservationDto>> GetReservations(string userId);
         Task<SendReservationDto?> GetReservation(int reservationId, string userId);
-        Task<Reservation> AddReservation(string reservationName, DateOnly reservationDay, string user);
+        Task<SendReservationDto> AddReservation(string reservationName, DateOnly reservationDay, string user);
         Task<bool> DeleteReservation(int reservationId);
         void UpdateReservation(int reservationId);
     }
@@ -58,7 +58,7 @@ namespace ReservationAPI.Services
                 : null;
         }
 
-        public async Task<Reservation> AddReservation(string reservationName, DateOnly reservationDay, string userId)
+        public async Task<SendReservationDto> AddReservation(string reservationName, DateOnly reservationDay, string userId)
         {
 
             Reservation reservation = new() { ReservationName = reservationName, ReservationDay = reservationDay, UserId = int.Parse(userId) };
@@ -66,12 +66,13 @@ namespace ReservationAPI.Services
             await _DbContext.SaveChangesAsync();
             _customLogger.LogInformation($"Reservation {reservation} added.");
 
-            return reservation;
+            return new SendReservationDto {
+                ReservationID = reservation.ReservationID,
+                ReservationName = reservation.ReservationName,
+                ReservationDay = reservation.ReservationDay
+                };
         }
 
-        public async Task<bool> DeleteReservation(int reservationId)
-        {
-            // _logger.LogWarning($"Deleting reservation with Id: {reservationId}");
             Reservation? reservationToDelete = await _DbContext.Reservations.FirstOrDefaultAsync(r => r.ReservationID == reservationId);
             if (reservationToDelete == null)
             {
