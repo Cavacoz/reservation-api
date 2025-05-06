@@ -10,7 +10,7 @@ namespace ReservationAPI.Services
         Task<List<SendReservationDto>> GetReservations(string userId);
         Task<SendReservationDto?> GetReservation(int reservationId, string userId);
         Task<SendReservationDto> AddReservation(string reservationName, DateOnly reservationDay, string user);
-        Task<bool> DeleteReservation(int reservationId);
+        Task<bool> DeleteReservation(int reservationId, string userId);
         void UpdateReservation(int reservationId);
     }
 
@@ -73,17 +73,18 @@ namespace ReservationAPI.Services
                 };
         }
 
-            Reservation? reservationToDelete = await _DbContext.Reservations.FirstOrDefaultAsync(r => r.ReservationID == reservationId);
+        public async Task<bool> DeleteReservation(int reservationId, string userId)
+        {
+            Reservation? reservationToDelete = await _DbContext.Reservations.FirstOrDefaultAsync(r => r.ReservationID == reservationId && r.UserId == int.Parse(userId));
             if (reservationToDelete == null)
             {
-                // _logger.LogInformation("Reservation was not found or deleted.");
-                _customLogger.LogInformation($"Reservation {reservationId} was not found or deleted.");
+                _customLogger.LogInformation($"Reservation {reservationId} was not found for User: {userId}.");
                 return false;
             }
             _DbContext.Reservations.Remove(reservationToDelete);
             await _DbContext.SaveChangesAsync();
-            // _logger.LogInformation($"Reservation Deleted.");
-            _customLogger.LogInformation($"Reservation {reservationId} Deleted.");
+            _customLogger.LogInformation($"Reservation {reservationId} deleted for User: {userId}.");
+            
             return true;
         }
 

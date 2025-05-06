@@ -90,14 +90,11 @@ namespace ReservationAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteReservation(int reservationId)
         {
-            _customLogger.LogWarning($"Calling Service to delete reservation with Id: {reservationId}");
-            // _logger.LogWarning($"Calling Service to delete reservation with Id: {reservationId}");
-            bool wasDeleted = await _reservationService.DeleteReservation(reservationId);
-            if (!wasDeleted)
-            {
-                return NotFound("Either it wasn't deleted or not found!");
-            }
-            return NoContent();
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            _customLogger.LogWarning($"Calling Service to delete reservation with Id: {reservationId} for User: {userId}");
+            bool wasDeleted = await _reservationService.DeleteReservation(reservationId, userId);
+
+            return wasDeleted ? NoContent() : NotFound();
         }
 
         /// <summary>
