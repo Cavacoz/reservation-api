@@ -13,6 +13,7 @@ namespace ReservationAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Produces("application/json")]
     public class AuthController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -55,7 +56,7 @@ namespace ReservationAPI.Controllers
         /// Provides a token to a registered User.
         /// </summary>
         [HttpPost("login")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Login(LoginDto dto)
         {
@@ -68,7 +69,13 @@ namespace ReservationAPI.Controllers
                 return Unauthorized("Invalid credentials.");
 
             var token = GenerateJwtToken(user);
-            return Ok(new { token });
+
+            return Ok(new UserDto
+            {
+                UserId = user.UserId,
+                Email = user.Email,
+                JwtToken = token
+            });
         }
 
         private string GenerateJwtToken(User user)
