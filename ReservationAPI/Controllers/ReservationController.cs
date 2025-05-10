@@ -81,6 +81,7 @@ namespace ReservationAPI.Controllers
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(typeof(SendReservationDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddReservation(AddReservationDto dto)
         {
