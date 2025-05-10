@@ -2,6 +2,7 @@ using ReservationAPI.Models;
 using ReservationAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using ReservationAPI.DTO;
+using ReservationAPI.Exceptions;
 
 namespace ReservationAPI.Services
 {
@@ -49,22 +50,26 @@ namespace ReservationAPI.Services
         {
             Reservation? reservation = await _DbContext.Reservations.FirstOrDefaultAsync(r => r.ReservationID == reservationId && r.UserId == int.Parse(userId));
 
-            _customLogger.LogInformation(reservation == null ? "No servation found" : $"Found reservation: {reservation}");
+            if (reservation == null)
+            {
+                _customLogger.LogInformation($"No reservation found for User: {userId}");
+                throw new ReservationNotFound($"No reservation found for User: {userId} with Id: {reservationId}");
+            }
+            _customLogger.LogInformation($"Found reservation: {reservationId} for User: {userId}");
 
-            return reservation != null ? new SendReservationDto {
+            return new SendReservationDto {
                 ReservationID = reservation.ReservationID, 
                 ReservationName = reservation.ReservationName, 
-                ReservationDay = reservation.ReservationDay} 
-                : null;
+                ReservationDay = reservation.ReservationDay
+                };
         }
 
         public async Task<SendReservationDto> AddReservation(string reservationName, DateOnly reservationDay, string userId)
         {
-
             Reservation reservation = new() { ReservationName = reservationName, ReservationDay = reservationDay, UserId = int.Parse(userId) };
             await _DbContext.AddAsync(reservation);
             await _DbContext.SaveChangesAsync();
-            _customLogger.LogInformation($"Reservation {reservation} added.");
+            _customLogger.LogInformation($"Reservation {reservation} added for User: {userId}.");
 
             return new SendReservationDto {
                 ReservationID = reservation.ReservationID,
@@ -76,11 +81,13 @@ namespace ReservationAPI.Services
         public async Task<bool> DeleteReservation(int reservationId, string userId)
         {
             Reservation? reservationToDelete = await _DbContext.Reservations.FirstOrDefaultAsync(r => r.ReservationID == reservationId && r.UserId == int.Parse(userId));
+            
             if (reservationToDelete == null)
             {
-                _customLogger.LogInformation($"Reservation {reservationId} was not found for User: {userId}.");
+                _customLogger.LogInformation($"Reservation {reservationId} was not found for deletion to User: {userId}.");
                 return false;
             }
+            
             _DbContext.Reservations.Remove(reservationToDelete);
             await _DbContext.SaveChangesAsync();
             _customLogger.LogInformation($"Reservation {reservationId} deleted for User: {userId}.");

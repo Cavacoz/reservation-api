@@ -4,6 +4,7 @@ using ReservationAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using ReservationAPI.DTO;
+using ReservationAPI.Exceptions;
 
 namespace ReservationAPI.Controllers
 {
@@ -58,9 +59,18 @@ namespace ReservationAPI.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             _customLogger.LogInformation($"Getting reservation {reservationId} from service.");
-            var reservation = await _reservationService.GetReservation(reservationId, userId);
 
-            return reservation != null ? Ok(reservation) : NotFound($"No reservation found with {reservationId} for User: {userId}");
+            SendReservationDto? reservation;
+            try 
+            {
+                reservation = await _reservationService.GetReservation(reservationId, userId);
+            } 
+            catch (ReservationNotFound ex)
+            {
+                return NotFound($"No reservation found with {reservationId} for User: {userId}");
+            }
+            
+            return Ok(reservation);
         }
 
         /// <summary>
