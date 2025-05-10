@@ -12,6 +12,7 @@ namespace ReservationAPI.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public class ReservationController : ControllerBase
     {
         private readonly IReservationService _reservationService;
@@ -69,7 +70,7 @@ namespace ReservationAPI.Controllers
             {
                 return NotFound($"No reservation found with {reservationId} for User: {userId}");
             }
-            
+
             return Ok(reservation);
         }
 
