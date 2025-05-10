@@ -4,7 +4,7 @@ namespace ReservationAPI.DTO
 {
     public class AddReservationDto
     {
-        public string ReservationName { get; set; }
+        public required string ReservationName { get; set; }
         public int Year { get; set; }
 
         [Range(1, 12, ErrorMessage = "Month needs to be between 1 and 12!")]
