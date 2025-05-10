@@ -52,7 +52,7 @@ namespace ReservationAPI.Services
 
             if (reservation == null)
             {
-                _customLogger.LogInformation($"No reservation found for User: {userId}");
+                _customLogger.LogInformation($"No reservation found for User: {userId} with Id: {reservationId}");
                 throw new ReservationNotFound($"No reservation found for User: {userId} with Id: {reservationId}");
             }
             _customLogger.LogInformation($"Found reservation: {reservationId} for User: {userId}");
@@ -97,7 +97,7 @@ namespace ReservationAPI.Services
 
         public void UpdateReservation(int reservationId)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("Method not yet implemented.");
         }
 
     }

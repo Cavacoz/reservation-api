@@ -34,7 +34,7 @@ namespace ReservationAPI.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            _customLogger.LogInformation("Getting all reservations from service.");
+            _customLogger.LogInformation($"Getting all reservations from service for User: {userId}.");
 
             var reservations = await _reservationService.GetReservations(userId);
 
@@ -59,7 +59,7 @@ namespace ReservationAPI.Controllers
         public async Task<IActionResult> GetReservation(int reservationId)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            _customLogger.LogInformation($"Getting reservation {reservationId} from service.");
+            _customLogger.LogInformation($"Getting reservation {reservationId} from service for User: {userId}.");
 
             SendReservationDto? reservation;
             try 
@@ -68,7 +68,7 @@ namespace ReservationAPI.Controllers
             } 
             catch (ReservationNotFound ex)
             {
-                return NotFound($"No reservation found with {reservationId} for User: {userId}");
+                return NotFound(ex.Message);
             }
 
             return Ok(reservation);
@@ -86,7 +86,7 @@ namespace ReservationAPI.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             DateOnly reservationDay = new(dto.Year, dto.Month, dto.Day);
-            _customLogger.LogInformation($"Calling Service to add reservation to this day {reservationDay}");
+            _customLogger.LogInformation($"Calling Service to add reservation to this day {reservationDay} for User: {userId}");
             SendReservationDto reservation = await _reservationService.AddReservation(dto.ReservationName, reservationDay, userId);
 
             return CreatedAtAction(nameof(AddReservation), reservation);
@@ -123,11 +123,10 @@ namespace ReservationAPI.Controllers
             {
                 _reservationService.UpdateReservation(reservationId);
             }
-            catch (NotImplementedException)
+            catch (NotImplementedException ex)
             {
-                // _logger.LogError("Http method PUT not implementd!");
-                _customLogger.LogError("Http method PUT not implementd!");
-                return StatusCode(501, "Method is not yet implemented");
+                _customLogger.LogError(ex.Message);
+                return StatusCode(501, ex.Message);
             }
             return NoContent();
         }
