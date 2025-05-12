@@ -18,13 +18,11 @@ namespace ReservationAPI.Services
     public class ReservationService : IReservationService
     {
         private readonly AppDbContext _DbContext;
-        private readonly ILogger<ReservationService> _logger;
         private readonly Logging.ILogger _customLogger;
 
-        public ReservationService(AppDbContext dbContext, ILogger<ReservationService> logger, Logging.ILoggerFactory loggerFactory)
+        public ReservationService(AppDbContext dbContext, Logging.ILoggerFactory loggerFactory)
         {
             _DbContext = dbContext;
-            _logger = logger;
             _customLogger = loggerFactory.CreateLogger("ReservationService.txt");
         }
 
