@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 
 namespace ReservationAPI.Controllers
 {
@@ -69,15 +70,53 @@ namespace ReservationAPI.Controllers
                 return Unauthorized("Invalid credentials.");
 
             var token = GenerateJwtToken(user);
+            var refreshToken = GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7); // Token valid for 7 days
+            await _context.SaveChangesAsync();
 
             return Ok(new UserDto
             {
                 UserId = user.UserId,
                 Email = user.Email,
-                JwtToken = token
+                JwtToken = token,
+                RefreshToken = refreshToken
             });
         }
 
+        /// <summary>
+        /// Refreshes the current Token the user has 1 time only.
+        /// </summary>
+        [HttpPost("refresh-token")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> RefreshToken([FromHeader(Name = "Authorization")] string token, [FromHeader(Name = "Refresh-Token")] string refreshToken)
+        {
+            var principal = GetPrincipalFromExpiredToken(token);
+            if (principal == null)
+                return Unauthorized("Invalid token.");
+
+            var email = principal.Identity?.Name;
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+                return Unauthorized("Invalid refresh token.");
+
+            var newToken = GenerateJwtToken(user);
+            var newRefreshToken = GenerateRefreshToken();
+
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+            await _context.SaveChangesAsync();
+
+            return Ok(new UserDto
+            {
+                UserId = user.UserId,
+                Email = user.Email,
+                JwtToken = newToken,
+                RefreshToken = newRefreshToken
+            });
+        }
+    
         private string GenerateJwtToken(User user)
         {
             var claims = new[]
@@ -98,6 +137,41 @@ namespace ReservationAPI.Controllers
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = true,
+                ValidateIssuer = true,
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = false, // We want to extract expired token
+                ValidIssuer = _config["Jwt:Issuer"],
+                ValidAudience = _config["Jwt:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]))
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            try
+            {
+                var principal = tokenHandler.ValidateToken(token.Replace("Bearer ", ""), tokenValidationParameters, out var securityToken);
+                if (securityToken is not JwtSecurityToken jwtToken || jwtToken.Header.Alg != SecurityAlgorithms.HmacSha256)
+                    return null;
+
+                return principal;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        private string GenerateRefreshToken()
+        {
+            var randomBytes = new byte[64];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomBytes);
+            return Convert.ToBase64String(randomBytes);
         }
     }
 }

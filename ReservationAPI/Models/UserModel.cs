@@ -10,6 +10,10 @@ namespace ReservationAPI.Models
 
         public string PasswordHash { get; set; }
 
+        public string? RefreshToken { get; set; }
+        
+        public DateTime? RefreshTokenExpiryTime { get; set; }
+
         public ICollection<Reservation>? Reservations { get; set; }
 
     }
