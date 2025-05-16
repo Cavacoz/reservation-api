@@ -96,12 +96,17 @@ Ensure that the test project has the necessary dependencies restored before runn
 reservation-api/
 ├── ReservationAPI/           # Main API project
 │   ├── Controllers/          # API Controllers
-│   ├── Data/                 # Database context and migrations
-│   ├── Models/               # Data models
+│   ├── Data/                 # Database context
+|   ├── DTO/                  # Data Transfer Objects Models
+│   ├── Exceptions/           # Custom Exceptions
+|   ├── Logging/              # Logging Class and LogFiles
+|   ├── Models/               # Data models
 │   ├── Services/             # Business logic services
+|   ├── Validators/           # Custom Validators for Models
 │   └── Program.cs            # Application entry point
 ├── ReservationAPITests/      # Unit test project
-│   └── ReservationControllerTests.cs
+│   ├── ReservationControllerTests.cs
+|   └── ReservationServiceTests.cs
 ├── ReservationAPI.sln        # Solution file
 └── README.md                 # Project documentation
 ```
