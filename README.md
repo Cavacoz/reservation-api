@@ -105,14 +105,3 @@ reservation-api/
 ├── ReservationAPI.sln        # Solution file
 └── README.md                 # Project documentation
 ```
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-Feel free to customize this README further to match any additional features or specific instructions related to your project. Let me know if you need assistance with anything else!
-
