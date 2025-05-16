@@ -2,113 +2,160 @@ using ReservationAPI.Services;
 using ReservationAPI.Data;
 using ReservationAPI.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Moq;
+using Xunit;
+using ReservationAPI.DTO;
 
-namespace ReservationAPITests;
-
-[TestClass]
 public class ReservationServiceTests
 {
 
-    private AppDbContext _dbContext;
-    private ReservationService _reservationService;
-
-    [TestInitialize]
-    public void Setup()
+    private AppDbContext GetDbContext()
     {
         var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: "ReservationDb")
+            .UseSqlite("Data Source=reservationsTestDb.db")
             .Options;
 
-
-        _dbContext = new AppDbContext(options);
-
-        var logger = new LoggerFactory().CreateLogger<ReservationService>();
-        var customLoggerFactory = new ReservationAPI.Logging.LoggerFactory();
-
-
-        _reservationService = new ReservationService(_dbContext, logger, customLoggerFactory);
+        return new AppDbContext(options);
     }
 
-    [TestMethod]
-    public async Task GetReservations_ReturnAllReservations()
+    private ReservationService GetReservationService()
     {
-        await _dbContext.Reservations.AddRangeAsync(new List<Reservation>
-        {
-            new Reservation {ReservationName = "Alexia's Reservation", ReservationDay = DateOnly.FromDayNumber(0), User = "Alexia"},
-            new Reservation {ReservationName = "Rui's Reservation", ReservationDay = DateOnly.FromDayNumber(0), User = "Rui" }
-        });
+        var mockLogger = new Mock<ReservationAPI.Logging.ILogger>();
+        var mockLoggerFactory = new Mock<ReservationAPI.Logging.ILoggerFactory>();
+        mockLoggerFactory
+        .Setup(f => f.CreateLogger(It.IsAny<string>()))
+        .Returns(mockLogger.Object);
 
-        await _dbContext.SaveChangesAsync();
-
-        var result = await _reservationService.GetReservations();
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual(2, result.Count);
+        return new ReservationService(GetDbContext(), mockLoggerFactory.Object);
     }
 
-    [TestMethod]
+    [Fact]
+    public async Task GetReservations_ReturnAllReservationsForSpecificUser()
+    {
+        var dbContext = GetDbContext();
+        dbContext.Database.Migrate();
+
+        dbContext.Users.AddRange(
+            new User { Name = "Rui", Email = "ruicavaco@hotmail.com", PasswordHash = "afdsf2378rbefw78332%/&%&/$$G$%#" },
+            new User { Name = "Alexia", Email = "something@gmail.com", PasswordHash = "afdsf2378rbefw78332%/&%&/$$G$%#" }
+            );
+
+        await dbContext.SaveChangesAsync();
+
+        dbContext.AddRange(
+            new Reservation { ReservationName = "Test Res 1", ReservationDay = new DateOnly(2025, 1, 1), UserId = 1 },
+            new Reservation { ReservationName = "Test Res 2", ReservationDay = new DateOnly(2025, 1, 2), UserId = 2 }
+        );
+
+        await dbContext.SaveChangesAsync();
+
+        var service = GetReservationService();
+        string userIdToTest = "1";
+        var result = await service.GetReservations(userIdToTest);
+
+        dbContext.Database.EnsureDeleted();
+
+        Assert.Single(result);
+        Assert.Equal("Test Res 1", result[0].ReservationName);
+
+    }
+
+    [Fact]
     public async Task GetReservation_ReturnReservation()
     {
-        await _dbContext.Reservations.AddAsync(new Reservation
+
+        var dbContext = GetDbContext();
+        dbContext.Database.Migrate();
+
+        dbContext.Users.AddRange(
+            new User { Name = "Rui", Email = "ruicavaco@hotmail.com", PasswordHash = "afdsf2378rbefw78332%/&%&/$$G$%#" },
+            new User { Name = "Alexia", Email = "something@gmail.com", PasswordHash = "afdsf2378rbefw78332%/&%&/$$G$%#" }
+            );
+
+        await dbContext.SaveChangesAsync();
+
+        dbContext.Add(new Reservation
         {
-            ReservationName = "Rui's Reservation",
-            ReservationDay = DateOnly.FromDayNumber(0),
-            User = "Rui"
+            ReservationName = "Test Res 1",
+            ReservationDay = new DateOnly(2025, 1, 1),
+            UserId = 1
         });
 
-        await _dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
 
-        Reservation? reservation = await _reservationService.GetReservation(1);
-
-        Reservation expectedReservation = new()
+        SendReservationDto expectedReservation = new()
         {
-            ReservationName = "Rui's Reservation",
-            ReservationDay = DateOnly.FromDayNumber(0),
-            User = "Rui"
+            ReservationID = 1,
+            ReservationName = "Test Res 1",
+            ReservationDay = new DateOnly(2025, 1, 1)
         };
 
-        Assert.IsNotNull(reservation);
-        Assert.AreEqual(expectedReservation.ReservationName, reservation.ReservationName);
-        Assert.AreEqual(expectedReservation.ReservationDay, reservation.ReservationDay);
-        Assert.AreEqual(expectedReservation.User, reservation.User);
+        var service = GetReservationService();
+        var result = await service.GetReservation(1, "1");
+
+        dbContext.Database.EnsureDeleted();
+
+        Assert.Equal(expectedReservation.ReservationID, result.ReservationID);
+        Assert.Equal(expectedReservation.ReservationName, result.ReservationName);
+        Assert.Equal(expectedReservation.ReservationDay, result.ReservationDay);
+
     }
 
-    [TestMethod]
+    [Fact]
     public async Task AddReservation_ReturnReservationAdded()
     {
-        string reservationName = "Alexia's Reservation";
-        DateOnly reservationDay = DateOnly.FromDayNumber(0);
-        string user = "Alexia";
-        Reservation reservation = await _reservationService.AddReservation(reservationName, reservationDay, user);
-        Assert.IsNotNull(reservation);
-        Assert.AreEqual(reservation.ReservationID, 1);
-        Assert.AreEqual(reservation.ReservationName, reservationName);
-        Assert.AreEqual(reservation.ReservationDay, reservationDay);
-        Assert.AreEqual(reservation.User, user);
+
+        var dbContext = GetDbContext();
+        dbContext.Database.Migrate();
+        var service = GetReservationService();
+
+        string reservationName = "Test Res 1";
+        DateOnly reservationDay = new(2025, 1, 1);
+        string userId = "1";
+
+        dbContext.Users.AddRange(
+            new User { Name = "Rui", Email = "ruicavaco@hotmail.com", PasswordHash = "afdsf2378rbefw78332%/&%&/$$G$%#" },
+            new User { Name = "Alexia", Email = "something@gmail.com", PasswordHash = "afdsf2378rbefw78332%/&%&/$$G$%#" }
+            );
+
+        await dbContext.SaveChangesAsync();
+
+        var result = await service.AddReservation(reservationName, reservationDay, userId);
+
+        dbContext.Database.EnsureDeleted();
+
+        Assert.NotNull(result);
+        Assert.Equal(result.ReservationName, reservationName);
+        Assert.Equal(result.ReservationDay, reservationDay);
+        Assert.True(result.ReservationID > 0);
+
     }
 
-    [TestMethod]
+    [Fact]
     public async Task DeleteReservation_ReturnTrue()
     {
-        await _dbContext.AddAsync(new Reservation
-        {
-            ReservationName = "Alexia's Reservation",
-            ReservationDay = DateOnly.FromDayNumber(0),
-            User = "Alexia"
-        });
 
-        await _dbContext.SaveChangesAsync();
+        var dbContext = GetDbContext();
+        dbContext.Database.Migrate();
+        var service = GetReservationService();
 
-        bool wasDeleted = await _reservationService.DeleteReservation(1);
+        dbContext.Users.AddRange(
+            new User { Name = "Rui", Email = "ruicavaco@hotmail.com", PasswordHash = "afdsf2378rbefw78332%/&%&/$$G$%#" },
+            new User { Name = "Alexia", Email = "something@gmail.com", PasswordHash = "afdsf2378rbefw78332%/&%&/$$G$%#" }
+            );
 
-        Assert.IsTrue(wasDeleted);
-    }
+        await dbContext.SaveChangesAsync();
 
-    [TestCleanup]
-    public void Cleanup()
-    {
-        _dbContext.Database.EnsureDeleted();
-        _dbContext.Dispose();
+        dbContext.AddRange(
+            new Reservation { ReservationName = "Test Res 1", ReservationDay = new DateOnly(2025, 1, 1), UserId = 1 },
+            new Reservation { ReservationName = "Test Res 2", ReservationDay = new DateOnly(2025, 1, 2), UserId = 2 }
+        );
+
+        await dbContext.SaveChangesAsync();
+        var result = await service.DeleteReservation(1, "1");
+
+        dbContext.Database.EnsureDeleted();
+
+        Assert.True(result);
     }
 }
