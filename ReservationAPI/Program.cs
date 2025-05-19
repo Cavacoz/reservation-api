@@ -53,13 +53,21 @@ builder.Services.AddTransient<IReservationService, ReservationService>();
 // IEnumerable<KeyValuePair<string, string>> env;
 if (builder.Environment.IsDevelopment())
 {
-    // builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite("Data Source=reservation.db"));
     DotNetEnv.Env.Load(); // Loads to Environment variables
     builder.Configuration.AddEnvironmentVariables();
     builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseMySql(
-            builder.Configuration.GetConnectionString("DefaultConnection"),
-            ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+            builder.Configuration.GetConnectionString("TestConnection"),
+            ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("TestConnection"))
+            ));
+}
+else
+{
+    DotNetEnv.Env.Load();
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseMySql(
+            builder.Configuration.GetConnectionString("ProdConnection"),
+            ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("ProdConnection"))
             ));
 }
 
