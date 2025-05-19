@@ -50,6 +50,13 @@ builder.Services.AddTransient<ReservationAPI.Logging.ILoggerFactory, Reservation
 
 builder.Services.AddTransient<IReservationService, ReservationService>();
 
+// IEnumerable<KeyValuePair<string, string>> env;
+if (builder.Environment.IsDevelopment())
+{
+    DotNetEnv.Env.Load(); // Loads to Environment variables
+    builder.Configuration.AddEnvironmentVariables();
+}
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
