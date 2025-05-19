@@ -1,8 +1,13 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace ReservationAPI.Models
 {
 
     public class Reservation
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ReservationID { get; set; }
 
         public required string ReservationName { get; set; }

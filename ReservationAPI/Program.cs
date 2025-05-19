@@ -44,7 +44,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite("Data Source=reservation.db"));
+// Add here the line to connect to prod database.
 
 builder.Services.AddTransient<ReservationAPI.Logging.ILoggerFactory, ReservationAPI.Logging.LoggerFactory>();
 
@@ -53,8 +53,14 @@ builder.Services.AddTransient<IReservationService, ReservationService>();
 // IEnumerable<KeyValuePair<string, string>> env;
 if (builder.Environment.IsDevelopment())
 {
+    // builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite("Data Source=reservation.db"));
     DotNetEnv.Env.Load(); // Loads to Environment variables
     builder.Configuration.AddEnvironmentVariables();
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseMySql(
+            builder.Configuration.GetConnectionString("DefaultConnection"),
+            ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+            ));
 }
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
