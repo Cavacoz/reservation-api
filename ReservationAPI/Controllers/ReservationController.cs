@@ -34,6 +34,8 @@ namespace ReservationAPI.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+            if (userId is null) return Unauthorized();
+
             _customLogger.LogInformation($"Getting all reservations from service for User: {userId}.");
 
             var reservations = await _reservationService.GetReservations(userId);
@@ -59,6 +61,8 @@ namespace ReservationAPI.Controllers
         public async Task<IActionResult> GetReservation(int reservationId)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId is null) return Unauthorized();
+
             _customLogger.LogInformation($"Getting reservation {reservationId} from service for User: {userId}.");
 
             SendReservationDto? reservation;
@@ -86,6 +90,8 @@ namespace ReservationAPI.Controllers
         public async Task<IActionResult> AddReservation(AddReservationDto dto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId is null) return Unauthorized();
+
             DateOnly reservationDay = new(dto.Year, dto.Month, dto.Day);
             _customLogger.LogInformation($"Calling Service to add reservation to this day {reservationDay} for User: {userId}");
             SendReservationDto reservation = await _reservationService.AddReservation(dto.ReservationName, reservationDay, userId);
@@ -104,6 +110,8 @@ namespace ReservationAPI.Controllers
         public async Task<IActionResult> DeleteReservation(int reservationId)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId is null) return Unauthorized();
+            
             _customLogger.LogWarning($"Calling Service to delete reservation with Id: {reservationId} for User: {userId}");
             bool wasDeleted = await _reservationService.DeleteReservation(reservationId, userId);
 
