@@ -1,17 +1,14 @@
 using ReservationAPI.Controllers;
-using ReservationAPI.Data;
 using ReservationAPI.Services;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System.Net;
 using ReservationAPI.DTO;
-using Microsoft.AspNetCore.Http.HttpResults;
 using ReservationAPI.Exceptions;
 
+namespace ReservationAPITests;
 
 public class ReservationControllerTests
 {

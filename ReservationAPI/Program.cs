@@ -50,7 +50,6 @@ builder.Services.AddTransient<ReservationAPI.Logging.ILoggerFactory, Reservation
 
 builder.Services.AddTransient<IReservationService, ReservationService>();
 
-// IEnumerable<KeyValuePair<string, string>> env;
 if (builder.Environment.IsDevelopment())
 {
     DotNetEnv.Env.Load(); // Loads to Environment variables
@@ -95,11 +94,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    // app.UseSwaggerUI(options => // UseSwaggerUI is called only in Development.
-    // {
-    //     options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-    //     options.RoutePrefix = string.Empty;
-    // });
 }
 
 app.UseHttpsRedirection();

@@ -6,6 +6,8 @@ using Moq;
 using Xunit;
 using ReservationAPI.DTO;
 
+namespace ReservationAPITests;
+
 public class ReservationServiceTests
 {
 
