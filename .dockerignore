@@ -1,0 +1,42 @@
+# Ignore build output
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider and VS Code settings
+.idea/
+.vscode/
+
+# NuGet packages
+*.nupkg
+packages/
+
+# Logs
+*.log
+logs/
+LogFiles/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Dockerfile artifacts (if any)
+*.tar
+*.gz
+
+
+# Dependency caches
+**/node_modules/
+**/bower_components/
+
+# Global tools
+.dotnet/tools/
