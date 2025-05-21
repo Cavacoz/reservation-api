@@ -14,7 +14,7 @@ public class ReservationServiceTests
     private AppDbContext GetDbContext()
     {
         var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseSqlite("Data Source=reservationsTestDb.db")
+            .UseMySql("Server=test-mysql;Port=3306;Database=reservations;User=appuser;Password=apppassword;", new MySqlServerVersion(new Version(8, 0, 0)))
             .Options;
 
         return new AppDbContext(options);
