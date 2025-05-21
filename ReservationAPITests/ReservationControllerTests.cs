@@ -13,15 +13,6 @@ namespace ReservationAPITests;
 public class ReservationControllerTests
 {
 
-    // private AppDbContext GetDbContext()
-    // {
-    //     var options = new DbContextOptionsBuilder<AppDbContext>()
-    //     .UseSqlite("Data Source=reservationTestDb.db")
-    //     .Options;
-
-    //     return new AppDbContext(options);
-    // }
-
     private IReservationService GetReservationMockService()
     {
         var moqService = new Mock<IReservationService>();
