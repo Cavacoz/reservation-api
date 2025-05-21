@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
 using ReservationAPI.DTO;
+using Microsoft.Extensions.Configuration;
+using DotNetEnv.Configuration;
 
 namespace ReservationAPITests;
 
@@ -13,8 +15,13 @@ public class ReservationServiceTests
 
     private AppDbContext GetDbContext()
     {
+        DotNetEnv.Env.Load();
+        var envPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory())!.Parent!.Parent!.FullName, ".env");
+        var config = new ConfigurationBuilder().AddDotNetEnv(envPath).Build();
+        var stringConnection = config.GetConnectionString("TestConnection");
+
         var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseMySql("Server=test-mysql;Port=3306;Database=reservations;User=appuser;Password=apppassword;", new MySqlServerVersion(new Version(8, 0, 0)))
+            .UseMySql(stringConnection, ServerVersion.AutoDetect(stringConnection))
             .Options;
 
         return new AppDbContext(options);

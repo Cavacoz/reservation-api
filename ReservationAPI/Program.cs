@@ -56,8 +56,8 @@ if (builder.Environment.IsDevelopment())
     builder.Configuration.AddEnvironmentVariables();
     builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseMySql(
-            builder.Configuration.GetConnectionString("TestConnection"),
-            ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("TestConnection"))
+            builder.Configuration.GetConnectionString("DevConnection"),
+            ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DevConnection"))
             ));
 }
 else

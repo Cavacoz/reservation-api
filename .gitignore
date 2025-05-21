@@ -11,6 +11,7 @@ ReservationAPI/reservation.db-wal
 
 # Env files
 ReservationAPI/.env
+ReservationAPITests/.env
 
 # This two folders are recreated when the project is built. 
 ReservationAPI/obj/
