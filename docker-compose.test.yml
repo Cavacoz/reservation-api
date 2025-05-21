@@ -23,10 +23,6 @@ services:
     command: >
       /bin/sh -c "
       dotnet restore ReservationAPI.sln &&
-      cd ReservationAPI &&
-      dotnet tool restore &&
-      dotnet tool run dotnet-ef database update --project ReservationAPI.csproj --startup-project ReservationAPI.csproj &&
-      cd .. &&
       dotnet test --logger 'console;verbosity=detailed'
       "
 
