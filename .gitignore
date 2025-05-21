@@ -2,7 +2,7 @@ ReservationAPI/Migrations/
 ReservationAPI/Logging/
 
 # Random Files
-runMySQLDev
+runMySQLDev.txt
 
 # Database related files.
 ReservationAPI/reservation.db
