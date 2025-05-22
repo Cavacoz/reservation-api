@@ -29,8 +29,10 @@ services:
         sleep 2;
       done
       &&
-      dotnet restore ReservationAPI.sln &&
-      dotnet test --logger "console;verbosity=detailed"
+      dotnet restore ReservationAPI.sln
+      &&
+      dotnet test --logger 'console;verbosity=detailed'
+      "
 
 volumes:
   build-cache:
