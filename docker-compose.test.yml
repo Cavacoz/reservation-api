@@ -30,7 +30,7 @@ services:
       done
       &&
       dotnet restore ReservationAPI.sln &&
-      dotnet test ReservationAPI.Tests/ReservationAPI.Tests.csproj \
+      dotnet test \
       /p:CollectCoverage=true \
       /p:CoverletOutputFormat=cobertura \
       /p:CoverletOutput=/app/coverage/coverage \
