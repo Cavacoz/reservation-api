@@ -30,4 +30,4 @@ volumes:
   build-cache:
 
 networks:
-  test-net:
+  reservation-api_test-net:
