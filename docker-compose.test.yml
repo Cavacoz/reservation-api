@@ -18,6 +18,8 @@ services:
     working_dir: /app
     depends_on:
       - test-mysql
+    volumes:
+      - ./jenkins-artifacts:/app/coverage
     networks:
       - test-net
     command: >
@@ -28,7 +30,7 @@ services:
       done
       &&
       dotnet restore ReservationAPI.sln &&
-      dotnet test --logger 'console;verbosity=detailed'
+      dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=/app/coverage/coverage.cobertura.xml --logger 'console;verbosity=detailed'
       "
 
 volumes:
