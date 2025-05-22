@@ -22,6 +22,11 @@ services:
       - test-net
     command: >
       /bin/sh -c "
+      until mysqladmin ping -h test-mysql --silent; do
+        echo 'Waiting for MySQL to be ready...';
+        sleep 2;
+      done
+      &&
       dotnet restore ReservationAPI.sln &&
       dotnet test --logger 'console;verbosity=detailed'
       "
