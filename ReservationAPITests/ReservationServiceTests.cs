@@ -19,23 +19,12 @@ public class ReservationServiceTests
         var envPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory())!.Parent!.Parent!.FullName, ".env");
         var config = new ConfigurationBuilder().AddDotNetEnv(envPath).Build();
         var stringConnection = config.GetConnectionString("TestConnection");
+        
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseMySql(stringConnection, ServerVersion.AutoDetect(stringConnection))
+            .Options;
 
-        try
-        {
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseMySql(stringConnection, ServerVersion.AutoDetect(stringConnection))
-                .Options;
-            return new AppDbContext(options);
-        }
-        catch
-        {
-            stringConnection = config.GetConnectionString("DevConnection");
-            var options1 = new DbContextOptionsBuilder<AppDbContext>()
-                .UseMySql(stringConnection, ServerVersion.AutoDetect(stringConnection))
-                .Options;
-            return new AppDbContext(options1);
-        }
-
+        return new AppDbContext(options);
     }
 
     private ReservationService GetReservationService()
