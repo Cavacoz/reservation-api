@@ -30,12 +30,7 @@ services:
       done
       &&
       dotnet restore ReservationAPI.sln &&
-      dotnet test \
-      /p:CollectCoverage=true \
-      /p:CoverletOutputFormat=cobertura \
-      /p:CoverletOutput=/app/coverage/coverage \
-      --logger 'console;verbosity=detailed'
-      "
+      dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=/app/coverage/coverage --logger "console;verbosity=detailed"
 
 volumes:
   build-cache:
