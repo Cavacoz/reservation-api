@@ -22,12 +22,6 @@ services:
       - test-net
     command: >
       /bin/sh -c "
-      until ping -c 1 test-mysql > /dev/null 2>&1; do
-        echo 'Waiting for MySQL container to be reachable...';
-        sleep 2;
-      done;
-      echo 'MySQL container reachable, waiting a few more seconds...';
-      sleep 5;
       dotnet restore ReservationAPI.sln &&
       dotnet test --logger 'console;verbosity=detailed'
       "
