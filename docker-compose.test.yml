@@ -9,7 +9,7 @@ services:
     ports:
       - "3306:3306"
     networks:
-      - test-net
+      - reservation-api_test-net
 
   test-runner:
     build: 
@@ -19,7 +19,7 @@ services:
     depends_on:
       - test-mysql
     networks:
-      - test-net
+      - reservation-api_test-net
     command: >
       /bin/sh -c "
       dotnet restore ReservationAPI.sln &&
@@ -30,4 +30,4 @@ volumes:
   build-cache:
 
 networks:
-  test-net:
+  reservation-api_test-net:
